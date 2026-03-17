@@ -5,11 +5,10 @@ class ArtEngine {
     private animId: number | null = null;
     private lastTime: number = 0;
 
-    // Параметры для алгоритмов (теперь реактивные)
     public settings = $state({
         active: false,
-        intensity: 0.5, // Сила изменений
-        speed: 0.2,     // Скорость эволюции
+        intensity: 0.5,
+        speed: 0.2,
     });
 
     start() {
@@ -43,21 +42,15 @@ class ArtEngine {
         const t = time * 0.001 * speed;
 
         synthState.waves.forEach((w, index) => {
-            // 1. Броуновское движение для детюна (создает живое биение)
             const detuneDrift = Math.sin(t + index) * intensity * 5;
             
-            // 2. Модуляция панорамы (волны плавают в пространстве)
             const panDrift = Math.cos(t * 0.7 + index * 0.5) * intensity;
             
-            // 3. Легкое "мерцание" громкости
             const volDrift = 0.8 + Math.sin(t * 1.5 + index) * 0.2 * intensity;
 
-            // Обновляем напрямую в стейте (updateWave вызывает AudioEngine.updateParams)
-            // Но для производительности в арте мы можем обновлять AudioEngine реже или пачкой
             w.detune = parseFloat((w.detune + detuneDrift * dt).toFixed(3));
             w.pan = parseFloat(Math.max(-1, Math.min(1, w.pan + panDrift * dt)).toFixed(3));
             
-            // Ограничиваем детюн, чтобы гармоники не разлетались слишком сильно
             if (Math.abs(w.detune) > 20) w.detune *= 0.95;
         });
 

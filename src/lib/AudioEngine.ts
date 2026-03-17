@@ -31,21 +31,14 @@ class Engine {
         if (!this.ctx || !this.masterGain) return;
         this.stopAll();
 
-        const activeWaves = waves.filter((w: Wave) => {
-            if (!w.active) return false;
-            if (soloWaveId !== null) {
-                return w.id === soloWaveId || w.parentId === soloWaveId;
-            }
-            return true;
-        });
 
-        const activeCount = activeWaves.length || 1;
+        const activeCount = waves.length || 1;
         
         let masterVol = 0.5;
         if (activeCount > 10) masterVol = 0.5 / Math.sqrt(activeCount);
-        this.masterGain.gain.value = masterVol;
+        this.masterGain.gain.setTargetAtTime(masterVol, this.ctx.currentTime, 0.1);
 
-        activeWaves.forEach((w: Wave) => {
+        waves.forEach((w: Wave) => {
             if (!this.ctx || !this.masterGain) return;
             
             const osc = this.ctx.createOscillator();
@@ -55,7 +48,7 @@ class Engine {
             osc.type = w.type;
             osc.frequency.value = (baseFreq * w.mul) + w.detune;
             
-            let finalVol = w.vol * (w.inverted ? -1 : 1);
+            let finalVol = w.active ? w.vol * (w.inverted ? -1 : 1) : 0;
             gain.gain.value = finalVol;
             panner.pan.value = w.pan;
 
@@ -72,11 +65,10 @@ class Engine {
         if (!this.ctx) return;
         this.nodes.forEach(node => {
             const w = waves.find((x: Wave) => x.id === node.waveId);
-            if (w && w.active) {
+            if (w) {
                 node.osc.frequency.setTargetAtTime((baseFreq * w.mul) + w.detune, this.ctx!.currentTime, 0.05);
-                node.osc.type = w.type;
-                let finalVol = w.vol * (w.inverted ? -1 : 1);
-                node.gain.gain.setTargetAtTime(finalVol, this.ctx!.currentTime, 0.05);
+                let targetGain = w.active ? w.vol * (w.inverted ? -1 : 1) : 0;
+                node.gain.gain.setTargetAtTime(targetGain, this.ctx!.currentTime, 0.05);
                 node.panner.pan.setTargetAtTime(w.pan, this.ctx!.currentTime, 0.05);
             }
         });

@@ -14,7 +14,7 @@
     "noImplicitAny": false,
     "strict": true,
     "skipLibCheck": true,
-    "types": ["svelte"] // <-- Добавь эту строку
+    "types": ["svelte"] 
   },
   "include": ["src/**/*.ts", "src/**/*.js", "src/**/*.svelte"]
 }

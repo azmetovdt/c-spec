@@ -54,8 +54,8 @@
     {#if !showFull}
         <div style="color:#555;">{isHarmonic ? '' : '#' + labelIndex}</div>
         <div style="color:#4f9; font-size:0.8em">{isHarmonic ? 'HARM' : 'MAIN'}</div>
-        <div class="compact-info" style="font-size:0.8em; color:#aaa">
-            {isHarmonic ? `x${wave.mul}` : 'Fund'} | Det: {wave.detune.toFixed(2)} | Pan: {wave.pan}
+        <div class="compact-info" style="font-size:0.8em; color:#aaa; font-variant-numeric: tabular-nums;">
+            {isHarmonic ? `x${wave.mul.toFixed(2)}` : 'Fund'} | Det: {wave.detune.toFixed(2)} | Pan: {wave.pan.toFixed(2)}
         </div>
         <div class="action-buttons">
             <button class="btn-icon" onclick={() => isExpanded = true} title="Развернуть">⚙️</button>
@@ -77,12 +77,12 @@
         </div>
 
         <div class="row-control">
-            <label>Mult (x{wave.mul})</label>
+            <label>Mult <span class="num">x{wave.mul.toFixed(2)}</span></label>
             <input type="range" min="0.5" max="12.0" step="0.5" value={wave.mul} oninput={(e) => handleChange('mul', parseFloat(e.currentTarget.value))} ondblclick={() => resetParam('mul', 1.0)}>
         </div>
 
         <div class="row-control">
-            <label>Detune ({wave.detune} Hz)</label>
+            <label>Detune <span class="num">{wave.detune.toFixed(2)} Hz</span></label>
             <input type="range" min="-15.0" max="15.0" step="0.1" value={wave.detune} oninput={(e) => handleChange('detune', parseFloat(e.currentTarget.value))} ondblclick={() => resetParam('detune', 0.0)}>
         </div>
 
@@ -92,7 +92,7 @@
         </div>
 
         <div class="row-control">
-            <label>Pan: {wave.pan}</label>
+            <label>Pan: <span class="num">{wave.pan.toFixed(2)}</span></label>
             <input type="range" class="pan-slider" min="-1" max="1" step="0.1" value={wave.pan} oninput={(e) => handleChange('pan', parseFloat(e.currentTarget.value))} ondblclick={() => resetParam('pan', 0.0)}>
         </div>
 
@@ -134,7 +134,8 @@
     .wave-row[data-type="square"] { border-left-color: #49f; }   
     .wave-row[data-type="triangle"] { border-left-color: #d4f; } 
     .row-control { display: flex; flex-direction: column; }
-    .row-control label { font-size: 0.7em; color: #666; margin-bottom: 2px; white-space: nowrap; }
+    .row-control label { font-size: 0.7em; color: #666; margin-bottom: 2px; white-space: nowrap; display: flex; justify-content: space-between; }
+    .row-control label .num { font-variant-numeric: tabular-nums; color: #aaa; min-width: 45px; text-align: right; }
     select, input[type="number"] { background: #111; border: 1px solid #444; color: #fff; padding: 4px; border-radius: 3px; }
     .btn-icon { background: none; border: none; cursor: pointer; color: #777; font-size: 1.2em; padding:0; }
     .btn-icon:hover { color: #fff; }
